@@ -1,36 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>French Development App</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>French Development</title>
+  <meta name="description" content="French learning app — single-file version" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: linear-gradient(to bottom right, #a8c0ff, #3f2b96);
-      color: white;
+    :root{
+      --bg1:#0b1020; --bg2:#111827; --fg:#e5e7eb; --muted:#cbd5e1;
+      --card:rgba(255,255,255,.06); --brd:rgba(255,255,255,.14);
+      --accent:#60a5fa; --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
     }
-    #root {
-      padding: 20px;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--fg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 700px at 15% -10%, #1e293b 0%, transparent 60%),
+        radial-gradient(900px 700px at 85% 10%, #0f172a 0%, transparent 55%),
+        linear-gradient(180deg,var(--bg2),var(--bg1));
     }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      border: none;
-      background-color: #ff9800;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
+    a{color:#93c5fd}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    .card{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:20px;margin-bottom:18px}
+    h1{margin:0 0 8px;font-size:1.6rem}
+    h2{margin:8px 0 12px;font-size:1.15rem}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--brd); background:rgba(255,255,255,.06);
+      padding:10px 12px;border-radius:10px;color:var(--fg);cursor:pointer;
     }
-    button:hover {
-      background-color: #e68900;
-    }
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn.ok{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.15)}
+    .btn.bad{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.15)}
+    .k{padding:2px 8px;border-radius:999px;border:1px solid var(--brd);background:rgba(255,255,255,.05)}
+    .muted{color:var(--muted)}
+    .bar{height:12px;background:rgba(255,255,255,.08);border:1px solid var(--brd);border-radius:999px;overflow:hidden}
+    .bar>span{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#34d399)}
+    textarea{width:100%;min-height:160px;border:1px solid var(--brd);border-radius:12px;background:rgba(0,0,0,.25);color:var(--fg);padding:12px}
+    input[type="text"]{width:100%;border:1px solid var(--brd);border-radius:10px;background:rgba(0,0,0,.25);color:var(--fg);padding:10px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    td,th{border-bottom:1px solid var(--brd);padding:8px 6px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--brd);background:rgba(255,255,255,.06);font-size:.85rem}
+    .small{font-size:.9rem}
+    .section{margin-top:4px}
+    hr{border:none;border-top:1px solid var(--brd);opacity:.6;margin:12px 0}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
   </style>
 </head>
 <body>
-  <div id="root">Loading...</div>
+  <div class="wrap">
+    <div class="card">
+      <h1>🇫🇷 French Development</h1>
+      <p class="muted small">Single-file version. No build tools needed. Data saves in your browser.</p>
+      <div class="row small">
+        <span id="micState" class="pill">🎙️ Micro: <span class="mono">checking…</span></span>
+        <span id="recState" class="pill">🗣️ Parole: <span class="mono">inactive</span></span>
+        <span id="ttsState" class="pill">🔊 Écoute: <span class="mono">stopped</span></span>
+      </div>
+    </div>
 
-  <!-- React + Babel -->
-  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorig
+    <!-- Progress -->
+    <div class="card">
+      <h2>📈 Progression du jour</h2>
+      <div class="row">
+        <div><span class="muted">Objectif:</span> <span id="goalVal" class="k mono">20 xp</span></div>
+        <button class="btn" id="decGoal">-</button>
+        <button class="btn" id="incGoal">+</button>
+        <div><span class="muted">Gagné:</span> <span id="xpVal" class="k mono">0</span></div>
+      </div>
+      <div class="bar section"><span id="xpBar" style="width:0%"></span></div>
+      <div class="row section">
+        <button class="btn" data-xp="5" id="markListening">+5 Écoute</button>
+        <button class="btn" data-xp="5" id="markSpeaking">+5 Parler</button>
+        <button class="btn" data-xp="5" id="markReading">+5 Lecture</button>
+        <button class="btn" data-xp="5" id="markVocab">+5 Vocabulaire</button>
+        <button class="btn" id="resetDay">Réinitialiser la journée</button>
+      </div>
+      <p class="muted small">Conseil : visez 20–30 xp par jour. Le suivi se réinitialise chaque jour.</p>
+    </div>
+
+    <!-- Comprehension -->
+    <div class="card">
+      <h2>📰 Compréhension (A2 → B1)</h2>
+      <div class="row">
+        <button class="btn" id="loadSample">Charger un texte</button>
+        <button class="btn" id="toggleLang">Afficher la traduction (EN)</button>
+        <button class="btn" id="speakText">🔊 Écouter</button>
+        <button class="btn" id="stopSpeak">⏸️ Stop</button>
+      </div>
+      <p class="muted small">Astuce : cliquez sur <em>Écouter</em> pour TTS en français. Si rien ne parle, votre navigateur bloque la lecture automatique — recliquez.</p>
+      <textarea id="newsText"></textarea>
+      <div id="questions" class="section small"></div>
+      <div class="row section">
+        <button class="btn ok" id="markCompDone">Marquer comme fait (+5)</button>
+      </div>
+    </div>
+
+    <!-- Speaking -->
+    <div class="card">
+      <h2>🎤 Parler</h2>
+      <div class="row">
+        <button class="btn" id="askMic">Autoriser le micro</button>
+        <button class="btn" id="startRec">Parler</button>
+        <button class="btn bad" id="stopRec" disabled>Arrêter</button>
+      </div>
+      <p class="muted small">La reconnaissance vocale utilise l’API du navigateur (<span class="mono">SpeechRecognition</span>). Si elle n’est pas disponible, vous pouvez toujours tester le micro.</p>
+      <textarea id="speechOut" placeholder="Votre transcription apparaîtra ici…"></textarea>
+    </div>
+
+    <!-- Vocabulary -->
+    <div class="card">
+      <h2>📚 Vocabulaire</h2>
+      <div class="row">
+        <input id="vFr" type="text" placeholder="mot (FR) — ex: envisager" />
+        <input id="vEn" type="text" placeholder="translation (EN) — ex: to consider" />
+        <button class="btn" id="addWord">Ajouter</button>
+        <button class="btn" id="exportVocab">Exporter</button>
+        <button class="btn bad" id="clearVocab">Effacer</button>
+      </div>
+      <table id="vTable">
+        <thead><tr><th>FR</th><th>EN</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <hr />
