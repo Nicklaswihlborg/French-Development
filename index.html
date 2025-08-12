@@ -1,960 +1,849 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>French Development — Coach</title>
-<meta name="description" content="A single-file French learning coach with speaking, listening, comprehension, vocabulary SRS, phrases, goals & progress."/>
-<style>
-  :root{
-    --bg1:#0b1020; --bg2:#111827; --fg:#e5e7eb; --muted:#cbd5e1;
-    --card:rgba(255,255,255,.06); --brd:rgba(255,255,255,.14);
-    --accent:#60a5fa; --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
-    --focus: #a78bfa;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; color:var(--fg);
-    font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-    background:
-      radial-gradient(1000px 700px at 15% -10%, #1e293b 0%, transparent 60%),
-      radial-gradient(900px 700px at 85% 10%, #0f172a 0%, transparent 55%),
-      linear-gradient(180deg,var(--bg2),var(--bg1));
-  }
-  a{color:#93c5fd}
-  .wrap{max-width:1100px;margin:0 auto;padding:24px}
-  .card{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:20px;margin-bottom:18px}
-  h1{margin:0 0 8px;font-size:1.7rem}
-  h2{margin:6px 0 12px;font-size:1.2rem}
-  h3{margin:6px 0 8px;font-size:1.05rem}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  .stack{display:grid;gap:10px}
-  .btn{
-    border:1px solid var(--brd); background:rgba(255,255,255,.06);
-    padding:9px 12px;border-radius:10px;color:var(--fg);cursor:pointer;
-  }
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .btn.ok{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.15)}
-  .btn.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.15)}
-  .btn.bad{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.15)}
-  .btn.primary{border-color:rgba(96,165,250,.5);background:rgba(96,165,250,.2)}
-  .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--brd);background:rgba(255,255,255,.06);font-size:.85rem}
-  .k{padding:2px 8px;border-radius:999px;border:1px solid var(--brd);background:rgba(255,255,255,.05)}
-  .muted{color:var(--muted)}
-  .small{font-size:.9rem}
-  .bar{height:12px;background:rgba(255,255,255,.08);border:1px solid var(--brd);border-radius:999px;overflow:hidden}
-  .bar>span{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#34d399)}
-  textarea{width:100%;min-height:130px;border:1px solid var(--brd);border-radius:12px;background:rgba(0,0,0,.25);color:var(--fg);padding:12px}
-  input[type="text"], input[type="number"], select{
-    width:100%;border:1px solid var(--brd);border-radius:10px;background:rgba(0,0,0,.25);color:var(--fg);padding:10px
-  }
-  table{width:100%;border-collapse:collapse;margin-top:10px}
-  td,th{border-bottom:1px solid var(--brd);padding:8px 6px;vertical-align:top}
-  hr{border:none;border-top:1px solid var(--brd);opacity:.6;margin:12px 0}
-  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-  .tab{padding:8px 10px;border-radius:10px;border:1px solid var(--brd);cursor:pointer}
-  .tab.active{border-color:rgba(96,165,250,.5);background:rgba(96,165,250,.2)}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
-  .heat{display:grid;grid-template-columns:repeat(15,12px);gap:4px}
-  .box{width:12px;height:12px;border-radius:3px;border:1px solid var(--brd);background:rgba(255,255,255,.06)}
-  .box.l1{background:#0ea5e9} .box.l2{background:#22c55e} .box.l3{background:#a3e635} .box.l0{background:rgba(255,255,255,.08)}
-  canvas{width:100%;height:180px;border:1px solid var(--brd);border-radius:12px;background:rgba(255,255,255,.04)}
-  details summary{cursor:pointer}
-  .focus-ring:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>French Development — B2 Journey</title>
+  <meta name="description" content="All-in-one single-file French practice app with progress tracking, goals, speaking, listening, comprehension, vocabulary, and daily phrases." />
+  <style>
+    :root{
+      --bg1:#0b1020; --bg2:#111827; --fg:#e5e7eb; --muted:#cbd5e1;
+      --card:rgba(255,255,255,.06); --brd:rgba(255,255,255,.14);
+      --accent:#60a5fa; --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+      --link:#93c5fd;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--fg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 700px at 15% -10%, #1e293b 0%, transparent 60%),
+        radial-gradient(900px 700px at 85% 10%, #0f172a 0%, transparent 55%),
+        linear-gradient(180deg,var(--bg2),var(--bg1));
+    }
+    a{color:var(--link)}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .app-title{display:flex;align-items:center;gap:10px}
+    h1{margin:0;font-size:1.5rem}
+    .badge{border:1px solid var(--brd);background:rgba(255,255,255,.06);padding:6px 10px;border-radius:999px;font-size:.9rem}
+    nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+    nav button{
+      border:1px solid var(--brd);background:rgba(255,255,255,.06);
+      color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer
+    }
+    nav button.active{outline:2px solid var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .col-12{grid-column:span 12}
+    .col-6{grid-column:span 6}
+    .col-4{grid-column:span 4}
+    @media (max-width:900px){ .col-6{grid-column:span 12} .col-4{grid-column:span 12} }
+    .card{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:16px}
+    .muted{color:var(--muted)}
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .btn{
+      border:1px solid var(--brd);background:rgba(255,255,255,.06);
+      color:var(--fg);padding:10px 12px;border-radius:10px;cursor:pointer
+    }
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn.ok{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.15)}
+    .btn.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.15)}
+    .btn.bad{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.15)}
+    .k{padding:2px 8px;border-radius:999px;border:1px solid var(--brd);background:rgba(255,255,255,.05)}
+    .small{font-size:.9rem}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
+    .bar{height:12px;background:rgba(255,255,255,.08);border:1px solid var(--brd);border-radius:999px;overflow:hidden}
+    .bar>span{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#34d399)}
+    textarea{width:100%;min-height:150px;border:1px solid var(--brd);border-radius:12px;background:rgba(0,0,0,.25);color:var(--fg);padding:12px}
+    input[type="text"],input[type="number"]{
+      width:100%;border:1px solid var(--brd);border-radius:10px;background:rgba(0,0,0,.25);color:var(--fg);padding:10px
+    }
+    table{width:100%;border-collapse:collapse}
+    td,th{border-bottom:1px solid var(--brd);padding:8px 6px}
+    details summary{cursor:pointer}
+    hr{border:none;border-top:1px solid var(--brd);opacity:.6;margin:12px 0}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--brd);background:rgba(255,255,255,.06);font-size:.85rem}
+    .section-title{display:flex;align-items:center;gap:8px;margin:0 0 10px}
+    .chip{border:1px dashed var(--brd);border-radius:8px;padding:6px 10px}
+    .footer-note{opacity:.8}
+    .hidden{display:none !important}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:4px 0}
+    .score{font-weight:600}
+    canvas{width:100%;height:150px;border:1px solid var(--brd);border-radius:10px;background:rgba(255,255,255,.03)}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="card">
-    <h1>🇫🇷 French Development — Coach</h1>
-    <p class="muted small">Single-file app. Works offline. Progress stored in your browser (localStorage). Target: B2 by end of year.</p>
-    <div class="row small">
-      <span id="micState" class="pill">🎙️ Micro: <span class="mono">checking…</span></span>
-      <span id="recState" class="pill">🗣️ Parole: <span class="mono">inactive</span></span>
-      <span id="ttsState" class="pill">🔊 Écoute: <span class="mono">stopped</span></span>
-      <span id="streakState" class="pill">🔥 Série: <span class="mono">0</span> jours</span>
-      <span id="levelState" class="pill">🎯 Niveau: <span class="mono">A2</span></span>
-    </div>
-  </div>
+  <div class="wrap">
+    <header class="header">
+      <div class="app-title">
+        <h1>🇫🇷 French Development — B2 Journey</h1>
+      </div>
+      <div class="row small">
+        <span id="streakBadge" class="badge">🔥 Streak: 0</span>
+        <span id="goalBadge" class="badge">🎯 Objectif: 30 xp/jour</span>
+        <span id="b2Badge" class="badge">🎓 Objectif B2: <span id="daysToB2"></span> jours</span>
+      </div>
+    </header>
 
-  <!-- DASHBOARD -->
-  <div class="card" id="dash">
-    <h2>📊 Tableau de bord</h2>
-    <div class="grid-2">
-      <div class="stack">
-        <div class="row">
-          <div><span class="muted">Objectif quotidien:</span> <span id="goalDaily" class="k mono">30 xp</span></div>
-          <button class="btn" id="decGoal">-</button>
-          <button class="btn" id="incGoal">+</button>
-          <div><span class="muted">Gagné aujourd’hui:</span> <span id="xpToday" class="k mono">0</span></div>
+    <nav id="tabs"></nav>
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view">
+      <div class="grid">
+        <div class="col-6">
+          <div class="card">
+            <div class="section-title"><h2>📈 Progression du jour</h2><span class="chip small">se réinitialise chaque jour</span></div>
+            <div class="row small">
+              <span>Objectif:</span><span id="goalVal" class="k mono">30 xp</span>
+              <button class="btn" id="decGoal">-</button>
+              <button class="btn" id="incGoal">+</button>
+              <span>Gagné:</span><span id="xpVal" class="k mono">0</span>
+            </div>
+            <div class="bar" style="margin-top:8px"><span id="xpBar" style="width:0%"></span></div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn" data-xp="5" data-flag="listening">+5 Écoute</button>
+              <button class="btn" data-xp="5" data-flag="speaking">+5 Parler</button>
+              <button class="btn" data-xp="5" data-flag="reading">+5 Lecture</button>
+              <button class="btn" data-xp="5" data-flag="vocab">+5 Vocabulaire</button>
+              <button class="btn" data-xp="5" data-flag="phrases">+5 Phrases</button>
+              <button class="btn warn" id="resetDay">Réinitialiser</button>
+            </div>
+            <p class="muted small">Conseil : visez 30–45 xp/jour. 5 xp ≈ 5–10 minutes d’effort concentré.</p>
+          </div>
         </div>
-        <div class="bar"><span id="xpBar" style="width:0%"></span></div>
-        <div class="row">
-          <button class="btn ok" data-xp="5" id="btnMarkListening">+5 Écoute</button>
-          <button class="btn ok" data-xp="5" id="btnMarkSpeaking">+5 Parler</button>
-          <button class="btn ok" data-xp="5" id="btnMarkReading">+5 Lecture</button>
-          <button class="btn ok" data-xp="5" id="btnMarkVocab">+5 Vocabulaire</button>
-          <button class="btn warn" id="resetToday">Réinitialiser la journée</button>
+        <div class="col-6">
+          <div class="card">
+            <div class="section-title"><h2>📊 14 derniers jours</h2><span class="chip small">tendance & cumul</span></div>
+            <canvas id="chart14"></canvas>
+            <div class="row small" style="margin-top:8px">
+              <span>Total 14j: <span id="sum14" class="mono">0</span> xp</span>
+              <span>Semaine en cours: <span id="wkXp" class="mono">0</span> xp</span>
+              <span>Streak jours ≥ objectif: <span id="streakDays" class="mono">0</span></span>
+            </div>
+          </div>
         </div>
-        <div class="row small">
-          <span class="muted">Objectif hebdo:</span>
-          <input id="weeklyGoal" type="number" min="50" step="10" class="focus-ring" style="max-width:120px"/>
-          <button class="btn" id="saveWeeklyGoal">Enregistrer</button>
-          <span class="muted">Cumul semaine:</span> <span id="xpWeek" class="k mono">0</span>
+
+        <div class="col-4">
+          <div class="card">
+            <div class="section-title"><h2>🎯 Objectifs</h2></div>
+            <div class="row small">
+              <label for="dailyMinutes" class="muted">Minutes/jour:</label>
+              <input id="dailyMinutes" type="number" min="5" step="5" />
+              <button class="btn" id="saveDailyMinutes">Sauver</button>
+            </div>
+            <div class="row small" style="margin-top:6px">
+              <label for="weeklyHours" class="muted">Heures/semaine:</label>
+              <input id="weeklyHours" type="number" min="1" step="1" />
+              <button class="btn" id="saveWeeklyHours">Sauver</button>
+            </div>
+            <hr />
+            <p class="small">Recommandé pour passer A2 → B2 d’ici fin d’année : <strong>7–10 h / semaine</strong> + pratique active quotidienne (parler/écouter).</p>
+            <p class="muted small">Aujourd’hui: <span id="todayPlan"></span></p>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="card">
+            <div class="section-title"><h2>🧱 Plan B2</h2></div>
+            <ul class="list small">
+              <li><strong>Quotidien (30–45 min):</strong> 10 min vocab SRS, 10 min compréhension, 10–15 min parler/écouter.</li>
+              <li><strong>Hebdo (1–2×):</strong> 30–45 min conversation réelle (tuteur ou tandem).</li>
+              <li><strong>Mensuel:</strong> mini test DELF B1/B2 (lecture, écoute, production).</li>
+              <li><strong>Qualité > quantité:</strong> feedback, correction active, révision espacée.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="card">
+            <div class="section-title"><h2>🛠️ Données</h2></div>
+            <div class="row">
+              <button class="btn" id="exportData">Exporter</button>
+              <label class="btn">
+                Importer <input id="importData" type="file" accept="application/json" class="hidden" />
+              </label>
+              <button class="btn bad" id="factoryReset">Réinitialisation complète</button>
+            </div>
+            <p class="small muted">Tout est stocké <em>localement</em> (localStorage). L’export crée un fichier .json à conserver.</p>
+          </div>
         </div>
       </div>
-      <div class="stack">
-        <div class="row small"><strong>Activité (30 derniers jours)</strong></div>
-        <div id="heatmap" class="heat" aria-label="calendar heatmap"></div>
-        <canvas id="weeklyChart" aria-label="weekly xp chart"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="card">
-    <div class="tabs">
-      <div class="tab active" data-tab="phrases">Phrases</div>
-      <div class="tab" data-tab="listening">Écouter</div>
-      <div class="tab" data-tab="speaking">Parler</div>
-      <div class="tab" data-tab="comprehension">Compréhension</div>
-      <div class="tab" data-tab="vocab">Vocabulaire (SRS)</div>
-      <div class="tab" data-tab="settings">Réglages</div>
-      <div class="tab" data-tab="data">Données</div>
-    </div>
-
-    <!-- PHRASES -->
-    <section id="phrases" class="stack section">
-      <h2>📅 Phrases du jour</h2>
-      <p class="muted small">Entraîne-toi chaque jour avec 10 phrases fréquentes. Lis à voix haute, écoute avec TTS, puis essaie sans regarder.</p>
-      <div class="row">
-        <button class="btn primary" id="newPhrases">Nouvelles phrases</button>
-        <button class="btn" id="speakAll">🔊 Tout écouter</button>
-        <button class="btn ok" id="phrasesDone">Marquer comme fait (+5)</button>
-      </div>
-      <table id="phrasesTable"><thead><tr><th>FR</th><th>EN</th><th>🔊</th><th>Maîtrisé</th></tr></thead><tbody></tbody></table>
     </section>
 
-    <!-- LISTENING -->
-    <section id="listening" class="stack section" style="display:none">
-      <h2>👂 Écoute guidée</h2>
-      <div class="row">
-        <button class="btn" id="listenPlay">🔊 Lire</button>
-        <button class="btn" id="listenStop">⏸️ Stop</button>
-        <select id="listenMode" style="max-width:220px">
-          <option value="mcq">QCM (choix multiple)</option>
-          <option value="dict">Dictée (tapez ce que vous entendez)</option>
-        </select>
-        <button class="btn ok" id="listeningDone">Marquer comme fait (+5)</button>
-      </div>
-      <div class="stack">
-        <div id="listenPrompt" class="pill"></div>
-        <div id="listenMCQ" class="row"></div>
-        <textarea id="listenDict" placeholder="Tapez ici… (mode dictée)" style="display:none"></textarea>
-        <div id="listenFeedback" class="small"></div>
+    <!-- COMPREHENSION -->
+    <section id="view-comprehension" class="view hidden">
+      <div class="card">
+        <div class="section-title"><h2>📰 Compréhension (actualités simplifiées)</h2><span class="chip small">FR ⇄ EN + questions</span></div>
+        <div class="row">
+          <button class="btn" id="nextArticle">Nouveau texte</button>
+          <button class="btn" id="toggleArticleLang">Afficher traduction (EN)</button>
+          <button class="btn" id="speakArticle">🔊 Écouter</button>
+          <button class="btn" id="stopSpeakArticle">⏸️ Stop</button>
+          <button class="btn ok" id="markCompXP">+5 xp</button>
+        </div>
+        <textarea id="articleBox"></textarea>
+        <div id="articleQA" class="small" style="margin-top:8px"></div>
+        <p class="muted small">Astuce: écoutez d’abord, puis lisez, puis répondez mentalement aux questions avant de révéler.</p>
       </div>
     </section>
 
     <!-- SPEAKING -->
-    <section id="speaking" class="stack section" style="display:none">
-      <h2>🎤 Parler</h2>
-      <div class="row">
-        <button class="btn" id="askMic">Autoriser le micro</button>
-        <button class="btn" id="startRec">Parler</button>
-        <button class="btn bad" id="stopRec" disabled>Arrêter</button>
-        <button class="btn ok" id="speakingDone">Marquer comme fait (+5)</button>
+    <section id="view-speaking" class="view hidden">
+      <div class="card">
+        <div class="section-title"><h2>🎤 Parler</h2><span class="chip small">Reconnaissance vocale (Chrome) + invites</span></div>
+        <div class="row small">
+          <span id="micState" class="pill">🎙️ Micro: <span class="mono">checking…</span></span>
+          <span id="recState" class="pill">🗣️ État: <span class="mono">inactif</span></span>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="askMic">Autoriser micro</button>
+          <button class="btn" id="startRec">Démarrer</button>
+          <button class="btn bad" id="stopRec" disabled>Arrêter</button>
+          <button class="btn ok" id="markSpeakXP">+5 xp</button>
+        </div>
+        <p class="muted small">Choisissez un sujet et parlez 60–120 s. Visez des phrases complètes, connecteurs (d’abord, ensuite, pourtant…).</p>
+        <div class="row">
+          <select id="promptSelect" class="btn">
+            <option value="daily">Routine quotidienne</option>
+            <option value="opinion">Donner une opinion</option>
+            <option value="past">Raconter un souvenir</option>
+            <option value="future">Planifier / envisager</option>
+            <option value="work">Travail / projet</option>
+          </select>
+          <button class="btn" id="newPrompt">Nouvelle invite</button>
+          <button class="btn" id="speakPrompt">🔊 Lire l’invite</button>
+        </div>
+        <textarea id="promptBox" class="small" readonly></textarea>
+        <textarea id="speechOut" placeholder="Votre transcription apparaîtra ici…"></textarea>
       </div>
-      <p class="muted small">Dites la phrase affichée. On compare votre transcription à la phrase attendue (approximation) pour un score.</p>
-      <div class="row">
-        <span id="speakTarget" class="pill"></span>
-        <button class="btn" id="nextPrompt">Nouvelle phrase</button>
-        <button class="btn" id="playTarget">🔊 Écouter la cible</button>
-      </div>
-      <textarea id="speechOut" placeholder="Votre transcription apparaîtra ici…"></textarea>
-      <div id="speakScore" class="small"></div>
     </section>
 
-    <!-- COMPREHENSION -->
-    <section id="comprehension" class="stack section" style="display:none">
-      <h2>📰 Compréhension (A2 → B1)</h2>
-      <div class="row">
-        <button class="btn" id="loadSample">Charger un texte</button>
-        <button class="btn" id="toggleLang">Afficher la traduction (EN)</button>
-        <button class="btn" id="speakText">🔊 Écouter</button>
-        <button class="btn" id="stopSpeak">⏸️ Stop</button>
-        <button class="btn ok" id="compDone">Marquer comme fait (+5)</button>
+    <!-- LISTENING -->
+    <section id="view-listening" class="view hidden">
+      <div class="card">
+        <div class="section-title"><h2>👂 Écoute / Dictée</h2><span class="chip small">Taper ce que vous entendez</span></div>
+        <div class="row">
+          <button class="btn" id="playDictation">▶️ Lire</button>
+          <button class="btn" id="replayDictation">↻ Relire</button>
+          <button class="btn ok" id="markListenXP">+5 xp</button>
+        </div>
+        <p id="dictationHint" class="muted small"></p>
+        <textarea id="dictationInput" placeholder="Écrivez ce que vous entendez ici…"></textarea>
+        <div class="row">
+          <button class="btn" id="checkDictation">Vérifier</button>
+          <span id="dictationScore" class="score"></span>
+        </div>
+        <details style="margin-top:8px">
+          <summary>Afficher le texte cible</summary>
+          <p id="dictationTarget" class="small"></p>
+        </details>
       </div>
-      <textarea id="newsText"></textarea>
-      <div class="row small">
-        <button class="btn" id="makeCloze">Générer Cloze (mots cachés)</button>
-        <button class="btn" id="showAnswers">Révéler</button>
-      </div>
-      <div id="clozeBox" class="small"></div>
-      <div id="questions" class="section small"></div>
-      <p class="muted small">Collez votre propre article si vous voulez. (Certains sites bloquent la copie automatique — collez le texte manuellement.)</p>
     </section>
 
-    <!-- VOCAB -->
-    <section id="vocab" class="stack section" style="display:none">
-      <h2>📚 Vocabulaire — Leitner SRS</h2>
-      <p class="muted small">Révisez les cartes dues aujourd’hui. Notation: « Encore », « Difficile », « Bien », « Facile » — la carte passe à une boîte supérieure et revient plus tard.</p>
-      <div class="row">
-        <input id="vFr" type="text" placeholder="mot (FR) — ex: envisager"/>
-        <input id="vEn" type="text" placeholder="translation (EN) — ex: to consider"/>
-        <button class="btn" id="addWord">Ajouter</button>
-        <button class="btn" id="importVocab">Importer</button>
-        <button class="btn" id="exportVocab">Exporter</button>
-        <button class="btn bad" id="clearVocab">Effacer</button>
-      </div>
-      <div class="row small">
-        <span>Cartes totales: <span id="vCount" class="k mono">0</span></span>
-        <span>À réviser aujourd’hui: <span id="vDue" class="k mono">0</span></span>
-      </div>
-      <div id="reviewBox" class="card" style="background:rgba(0,0,0,.18)">
-        <div id="noDue" class="muted">Rien à réviser. Ajoutez des mots ou revenez plus tard.</div>
-        <div id="dueCard" style="display:none">
-          <div class="row"><span id="cardFront" class="pill"></span><button class="btn" id="flipCard">Révéler</button></div>
-          <div class="row" id="cardBack" style="display:none"><span class="pill" id="cardBackTxt"></span></div>
-          <div class="row section">
-            <button class="btn bad" id="gradeAgain">Encore</button>
-            <button class="btn" id="gradeHard">Difficile</button>
-            <button class="btn ok" id="gradeGood">Bien</button>
-            <button class="btn primary" id="gradeEasy">Facile</button>
-            <button class="btn" id="speakCard">🔊 Écouter</button>
+    <!-- VOCABULARY (SRS) -->
+    <section id="view-vocab" class="view hidden">
+      <div class="card">
+        <div class="section-title"><h2>📚 Vocabulaire (répétition espacée)</h2><span class="chip small">Due aujourd’hui: <span id="dueCount">0</span></span></div>
+        <div class="grid">
+          <div class="col-6">
+            <h3>Ajouter des mots</h3>
+            <div class="row">
+              <input id="vFr" type="text" placeholder="mot (FR) — ex: envisager" />
+              <input id="vEn" type="text" placeholder="translation (EN) — ex: to consider" />
+            </div>
+            <div class="row" style="margin-top:6px">
+              <button class="btn" id="addWord">Ajouter</button>
+              <button class="btn" id="exportVocab">Exporter</button>
+              <label class="btn">Importer <input id="importVocab" type="file" accept="application/json" class="hidden"/></label>
+              <button class="btn bad" id="clearVocab">Effacer tout</button>
+            </div>
+            <hr/>
+            <table id="vTable">
+              <thead><tr><th>FR</th><th>EN</th><th>Prochain</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="col-6">
+            <h3>Quiz (FR → EN)</h3>
+            <div class="row small">
+              <span class="muted">Cartes dues: <span id="dueNow">0</span></span>
+              <button class="btn" id="startQuiz">Commencer</button>
+              <button class="btn" id="skipCard" disabled>Passer</button>
+            </div>
+            <div class="card" style="margin-top:8px">
+              <div id="quizFront" class="section-title"><h2>—</h2></div>
+              <input id="quizAnswer" type="text" placeholder="Votre traduction…" />
+              <div class="row" style="margin-top:8px">
+                <button class="btn" id="revealA">Révéler</button>
+                <span id="quizBack" class="k"></span>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button class="btn bad" id="rateAgain" disabled>Encore (0)</button>
+                <button class="btn warn" id="rateHard" disabled>Difficile (2)</button>
+                <button class="btn" id="rateGood" disabled>Bien (3)</button>
+                <button class="btn ok" id="rateEasy" disabled>Facile (4)</button>
+                <button class="btn ok" id="markVocabXP" disabled>+5 xp</button>
+              </div>
+            </div>
+            <p class="muted small">Algorithme SRS simple (type SM-2 léger) : bonnes réponses → intervalle ↑; erreurs → révisions plus fréquentes.</p>
           </div>
         </div>
       </div>
-      <table id="vTable">
-        <thead><tr><th>FR</th><th>EN</th><th>Boîte</th><th>Échéance</th><th></th></tr></thead>
-        <tbody></tbody>
-      </table>
     </section>
 
-    <!-- SETTINGS -->
-    <section id="settings" class="stack section" style="display:none">
-      <h2>⚙️ Réglages</h2>
-      <div class="grid-2">
-        <div class="stack">
-          <label>Niveau cible
-            <select id="targetLevel">
-              <option>A2</option>
-              <option selected>B1</option>
-              <option>B2">B2</option>
-              <option>C1">C1</option>
-            </select>
-          </label>
-          <label>Voix TTS (si dispo)
-            <select id="voiceSelect"></select>
-          </label>
-          <label>Vitesse TTS
-            <input id="ttsRate" type="number" min="0.5" max="1.2" step="0.05" value="0.95"/>
-          </label>
-          <label>Langue de reconnaissance
-            <input id="recLang" type="text" value="fr-FR"/>
-          </label>
+    <!-- DAILY PHRASES -->
+    <section id="view-phrases" class="view hidden">
+      <div class="card">
+        <div class="section-title"><h2>🗣️ Phrases courantes — entraînement quotidien</h2><span class="chip small">10 par jour</span></div>
+        <div class="row">
+          <button class="btn" id="newPhrases">Nouveau set</button>
+          <button class="btn" id="speakAllPhrases">🔊 Écouter tout</button>
+          <button class="btn ok" id="markPhrasesXP">+5 xp</button>
         </div>
-        <div class="stack">
-          <h3>Objectifs</h3>
-          <label>XP quotidien
-            <input id="dailyGoalInput" type="number" min="10" step="5"/>
-          </label>
-          <label>XP hebdomadaire
-            <input id="weeklyGoalInput" type="number" min="50" step="10"/>
-          </label>
-          <button class="btn ok" id="saveGoals">Sauvegarder</button>
-        </div>
+        <div id="phraseList" class="small" style="margin-top:8px"></div>
       </div>
-      <p class="muted small">Astuce: pour B2 d’ici décembre, viser ~30–60 min/jour (20–40 XP), 5–6 jours/semaine, plus 2 sessions longues/sem.</p>
     </section>
 
-    <!-- DATA -->
-    <section id="data" class="stack section" style="display:none">
-      <h2>💾 Données</h2>
-      <div class="row">
-        <button class="btn" id="exportAll">Exporter tout</button>
-        <input id="importAllInput" type="file" accept=".json"/>
-        <button class="btn" id="importAllBtn">Importer</button>
-        <button class="btn bad" id="wipeAll">Tout effacer</button>
-      </div>
-      <details>
-        <summary>Voir les clés de stockage</summary>
-        <pre id="debugDump" class="small mono"></pre>
-      </details>
-    </section>
+    <p class="small muted footer-note">Conseil: répartissez la pratique (parler/écouter/lire/vocab) chaque jour; gardez la cadence plutôt que des marathons irréguliers.</p>
   </div>
 
-  <div class="card small muted">
-    <p>Conseils d’apprentissage (résumés des bonnes pratiques) : combine quotidiennement <strong>compréhension</strong> + <strong>écoute</strong> + <strong>parler</strong> + <strong>révision SRS</strong>. Étalonne des objectifs réalistes (20–40 XP/j, 140–250 XP/sem), garde une <strong>série</strong>, et utilise la répétition espacée. Fais 2 sessions « longues » par semaine (60–90 min) axées sur lecture + synthèse orale.</p>
-  </div>
-</div>
+  <script>
+    /* ===========================
+       Utilities & Storage
+       =========================== */
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    const todayKey = () => new Date().toISOString().slice(0,10);
+    const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+    const fmt = (d)=> new Date(d).toISOString().slice(0,10);
+    const weekNumber = (date = new Date())=>{
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+      return Math.ceil(((d - yearStart)/86400000 + 1)/7);
+    };
+    const store = {
+      get(k, def){ try{ return JSON.parse(localStorage.getItem(k)) ?? def } catch { return def } },
+      set(k, v){ localStorage.setItem(k, JSON.stringify(v)) }
+    };
 
-<script>
-/* =========================
-   Utilities & Persistence
-   ========================= */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const todayKey = () => new Date().toISOString().slice(0,10);
-const dateAdd = (d, days) => { const t = new Date(d); t.setDate(t.getDate()+days); return t.toISOString().slice(0,10); };
-const fmtDate = d => d;
-
-const store = {
-  get(k, def){ try{ return JSON.parse(localStorage.getItem(k)) ?? def } catch { return def } },
-  set(k, v){ localStorage.setItem(k, JSON.stringify(v)) },
-  del(k){ localStorage.removeItem(k) },
-  keys(){ return Object.keys(localStorage) }
-};
-
-const K = {
-  profile: 'fdv3_profile',
-  settings: 'fdv3_settings',
-  xpDaily: (d=todayKey()) => `fdv3_xp_${d}`,
-  flagsDaily: (d=todayKey()) => `fdv3_flags_${d}`,
-  goals: 'fdv3_goals',
-  streak: 'fdv3_streak',
-  history: 'fdv3_hist', // { 'YYYY-MM-DD': xp }
-  phrases: 'fdv3_phrases',
-  vocab: 'fdv3_vocab'
-};
-
-function ensureDefaults(){
-  if(!store.get(K.settings)) store.set(K.settings, {voice:null, rate:0.95, recLang:'fr-FR', targetLevel:'A2'});
-  if(!store.get(K.goals)) store.set(K.goals, {daily:30, weekly:200});
-  if(!store.get(K.streak)) store.set(K.streak, {count:0, last: null});
-  if(!store.get(K.history)) store.set(K.history, {});
-  if(!store.get(K.phrases)) store.set(K.phrases, {mastered:{}, lastSet:[], lastDay:null});
-  if(!store.get(K.vocab)) {
-    store.set(K.vocab, [
-      {fr:'envisager', en:'to consider', box:1, nextDue:todayKey(), last:null},
-      {fr:'mettre en place', en:'to set up', box:1, nextDue:todayKey(), last:null},
-      {fr:'piste cyclable', en:'bike lane', box:1, nextDue:todayKey(), last:null}
+    /* ===========================
+       Global Keys / Defaults
+       =========================== */
+    const K = {
+      goalDailyXP: 'fd_goal_daily_xp',
+      dailyMinutes: 'fd_daily_minutes',
+      weeklyHours: 'fd_weekly_hours',
+      xpByDay: 'fd_xp_by_day',        // { 'YYYY-MM-DD': number }
+      flagsByDay: 'fd_flags_by_day',  // { date: {listening,speaking,reading,vocab,phrases} }
+      vocabList: 'fd_vocab_list',     // array of cards
+      dueSeed: 'fd_due_seed',         // last generated daily phrase seed
+      phrasesDone: 'fd_phrases_done', // {date:true}
+      dataVersion: 'fd_data_v1'
+    };
+    // defaults
+    if (store.get(K.goalDailyXP)==null) store.set(K.goalDailyXP, 30);
+    if (store.get(K.dailyMinutes)==null) store.set(K.dailyMinutes, 40);
+    if (store.get(K.weeklyHours)==null) store.set(K.weeklyHours, 8);
+    if (store.get(K.xpByDay)==null) store.set(K.xpByDay, {});
+    if (store.get(K.flagsByDay)==null) store.set(K.flagsByDay, {});
+    if (store.get(K.vocabList)==null) store.set(K.vocabList, [
+      {id:1, fr:'envisager', en:'to consider', ease:2.5, interval:0, reps:0, due:fmt(todayKey())},
+      {id:2, fr:'mettre en place', en:'to set up', ease:2.5, interval:0, reps:0, due:fmt(todayKey())},
+      {id:3, fr:'piste cyclable', en:'bike lane', ease:2.5, interval:0, reps:0, due:fmt(todayKey())},
     ]);
-  }
-}
-ensureDefaults();
 
-/* =========================
-   Dashboard: XP, Goals, Streaks
-   ========================= */
-const goalDailyEl = $('#goalDaily'), xpTodayEl = $('#xpToday'), xpBarEl = $('#xpBar');
-const xpWeekEl = $('#xpWeek'), weeklyGoalInput = $('#weeklyGoal'), saveWeeklyGoalBtn = $('#saveWeeklyGoal');
-const decGoalBtn = $('#decGoal'), incGoalBtn = $('#incGoal'), resetTodayBtn = $('#resetToday');
-const streakState = $('#streakState'), levelState = $('#levelState');
-
-function getGoals(){ return store.get(K.goals, {daily:30, weekly:200}); }
-function setGoals(g){ store.set(K.goals, g); }
-function addXP(amount){
-  const d = todayKey();
-  const key = K.xpDaily(d);
-  const cur = store.get(key, 0) + amount;
-  store.set(key, cur);
-  const hist = store.get(K.history, {}); hist[d] = cur; store.set(K.history, hist);
-  updateStreak(cur);
-  renderDashboard();
-}
-function setXP(val){
-  const d = todayKey();
-  store.set(K.xpDaily(d), val);
-  const hist = store.get(K.history, {}); hist[d] = val; store.set(K.history, hist);
-  updateStreak(val);
-  renderDashboard();
-}
-function updateStreak(todayXp){
-  const s = store.get(K.streak);
-  const yesterday = dateAdd(todayKey(), -1);
-  if (s.last !== todayKey()){
-    // if yesterday had xp and today starting fresh, continue else reset if gap
-    const hist = store.get(K.history, {});
-    if (s.last === yesterday || s.last === null){
-      // determine if new day started with xp
-      if (todayXp>0) { s.count = (s.last===yesterday ? s.count+1 : (s.count || 0)+1); s.last = todayKey(); }
-      else { /* wait until xp added to increment */ }
-    } else {
-      // gap
-      if (todayXp>0){ s.count = 1; s.last = todayKey(); } else { s.count = 0; s.last = null; }
+    /* ===========================
+       Navigation
+       =========================== */
+    const VIEWS = [
+      {id:'dashboard', label:'🏠 Tableau de bord'},
+      {id:'comprehension', label:'📰 Compréhension'},
+      {id:'speaking', label:'🎤 Parler'},
+      {id:'listening', label:'👂 Écoute'},
+      {id:'vocab', label:'📚 Vocabulaire'},
+      {id:'phrases', label:'🗣️ Phrases'}
+    ];
+    function initTabs(){
+      const nav = $('#tabs');
+      VIEWS.forEach((v,i)=>{
+        const b = document.createElement('button');
+        b.className = 'btn' + (i===0?' active':'');
+        b.textContent = v.label;
+        b.dataset.view = v.id;
+        b.onclick = ()=>showView(v.id, b);
+        nav.appendChild(b);
+      });
+      showView('dashboard', nav.querySelector('button'));
     }
-  } else {
-    if (todayXp===0){ /* don't change */ }
-  }
-  store.set(K.streak, s);
-}
-
-function weekRangeEnd(endDate=todayKey()){
-  const end = new Date(endDate);
-  const start = new Date(endDate); start.setDate(end.getDate()-6);
-  return {start: start.toISOString().slice(0,10), end:endDate};
-}
-function weekSum(endDate=todayKey()){
-  const hist = store.get(K.history, {});
-  const {start,end} = weekRangeEnd(endDate);
-  let sum=0; const d0 = new Date(start);
-  for(let i=0;i<7;i++){ const d = new Date(d0); d.setDate(d0.getDate()+i);
-    sum += (hist[d.toISOString().slice(0,10)]||0);
-  }
-  return sum;
-}
-
-function renderHeatmap(){
-  const hist = store.get(K.history, {});
-  const container = $('#heatmap'); container.innerHTML='';
-  // last 30 days
-  const end = new Date(todayKey()); for(let i=29;i>=0;i--){
-    const d = new Date(end); d.setDate(end.getDate()-i);
-    const k = d.toISOString().slice(0,10);
-    const xp = hist[k]||0;
-    const div = document.createElement('div');
-    div.className = 'box ' + (xp>=30?'l3': xp>=10?'l2': xp>0?'l1':'l0');
-    div.title = `${k}: ${xp} xp`;
-    container.appendChild(div);
-  }
-}
-
-function renderWeeklyChart(){
-  const canvas = $('#weeklyChart');
-  const ctx = canvas.getContext('2d');
-  const hist = store.get(K.history, {});
-  // compute last 8 weeks sums
-  const weeks = [];
-  let end = new Date(todayKey());
-  for(let w=0; w<8; w++){
-    const endStr = end.toISOString().slice(0,10);
-    weeks.unshift({label: endStr, total: weekSum(endStr)});
-    end.setDate(end.getDate()-7);
-  }
-  // clear
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const W = canvas.width, H = canvas.height, pad=24;
-  const max = Math.max(50, ...weeks.map(x=>x.total));
-  const barW = (W - pad*2) / (weeks.length*1.2);
-  weeks.forEach((wk,i)=>{
-    const x = pad + i*barW*1.2;
-    const h = (H - pad*2) * (wk.total/max);
-    ctx.fillStyle = 'rgba(96,165,250,.8)';
-    ctx.fillRect(x, H-pad-h, barW, h);
-    ctx.fillStyle = 'rgba(226,232,240,.9)';
-    ctx.font = '12px system-ui';
-    ctx.fillText(String(wk.total), x, H-pad-h-4);
-  });
-  ctx.strokeStyle='rgba(255,255,255,.2)';
-  ctx.strokeRect(pad, pad, W-pad*2, H-pad*2);
-}
-
-function renderDashboard(){
-  const goals = getGoals();
-  const xp = store.get(K.xpDaily(todayKey()), 0);
-  goalDailyEl.textContent = goals.daily+' xp';
-  xpTodayEl.textContent = xp;
-  xpBarEl.style.width = Math.min(100, Math.round((xp/goals.daily)*100))+'%';
-  weeklyGoalInput.value = getGoals().weekly;
-  xpWeekEl.textContent = weekSum();
-  // streak
-  const s = store.get(K.streak);
-  streakState.innerHTML = `🔥 Série: <span class="mono">${s.count||0}</span> jours`;
-  renderHeatmap();
-  renderWeeklyChart();
-}
-$('#btnMarkListening').onclick = ()=> addXP(5);
-$('#btnMarkSpeaking').onclick  = ()=> addXP(5);
-$('#btnMarkReading').onclick   = ()=> addXP(5);
-$('#btnMarkVocab').onclick     = ()=> addXP(5);
-decGoalBtn.onclick = ()=>{ const g=getGoals(); g.daily=Math.max(10,g.daily-5); setGoals(g); renderDashboard(); };
-incGoalBtn.onclick = ()=>{ const g=getGoals(); g.daily=g.daily+5; setGoals(g); renderDashboard(); };
-resetTodayBtn.onclick = ()=>{ setXP(0); };
-saveWeeklyGoalBtn.onclick = ()=>{ const g=getGoals(); g.weekly = Math.max(50, Number(weeklyGoalInput.value)||g.weekly); setGoals(g); renderDashboard(); };
-
-/* =========================
-   Tabs
-   ========================= */
-$$('.tab').forEach(t => t.addEventListener('click', () => {
-  $$('.tab').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  ['phrases','listening','speaking','comprehension','vocab','settings','data'].forEach(id=>{
-    $( '#'+id ).style.display = (t.dataset.tab===id)?'block':'none';
-  });
-}));
-
-/* =========================
-   TTS + Mic + SpeechRecognition
-   ========================= */
-const ttsState = $('#ttsState');
-let voiceList = []; let voiceId = null;
-function refreshVoices(){
-  if(!('speechSynthesis' in window)) return;
-  voiceList = window.speechSynthesis.getVoices();
-  const sel = $('#voiceSelect'); sel.innerHTML='';
-  voiceList.filter(v=>v.lang.startsWith('fr')).concat(voiceList.filter(v=>!v.lang.startsWith('fr'))).forEach((v,i)=>{
-    const opt = document.createElement('option');
-    opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`; sel.appendChild(opt);
-  });
-  const saved = store.get(K.settings).voice;
-  if(saved){
-    sel.value = saved;
-  } else if (voiceList.find(v=>v.lang==='fr-FR')) {
-    sel.value = voiceList.find(v=>v.lang==='fr-FR').name;
-  }
-}
-if ('speechSynthesis' in window){
-  window.speechSynthesis.onvoiceschanged = refreshVoices;
-  setTimeout(refreshVoices, 200);
-}
-
-function speak(text){
-  if (!('speechSynthesis' in window)) { alert("Synthèse vocale indisponible"); return; }
-  window.speechSynthesis.cancel();
-  const s = store.get(K.settings);
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'fr-FR';
-  u.rate = Number(s.rate||0.95);
-  const v = voiceList.find(v=>v.name === s.voice);
-  if(v) u.voice = v;
-  u.onstart = ()=> ttsState.innerHTML='🔊 Écoute: <span class="mono">playing</span>';
-  u.onend = ()=> ttsState.innerHTML='🔊 Écoute: <span class="mono">stopped</span>';
-  speechSynthesis.speak(u);
-}
-
-$('#voiceSelect').addEventListener('change',(e)=>{
-  const s = store.get(K.settings); s.voice = e.target.value; store.set(K.settings, s);
-});
-$('#ttsRate').addEventListener('change',(e)=>{
-  const s = store.get(K.settings); s.rate = Number(e.target.value)||0.95; store.set(K.settings, s);
-});
-
-const micState = $('#micState'), recState = $('#recState'), recLangInput = $('#recLang');
-async function askMic(){
-  try{
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    stream.getTracks().forEach(t=>t.stop());
-    micState.innerHTML = '🎙️ Micro: <span class="mono">granted</span>';
-  }catch(e){
-    micState.innerHTML = '🎙️ Micro: <span class="mono">blocked</span>';
-    alert("Permission micro refusée. Autorisez le micro pour github.io");
-  }
-}
-$('#askMic').onclick = askMic;
-
-(async function initMicStatus(){
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    micState.innerHTML = '🎙️ Micro: <span class="mono">unsupported</span>'; return;
-  }
-  try{
-    if (navigator.permissions && navigator.permissions.query){
-      const r = await navigator.permissions.query({name:'microphone'});
-      micState.innerHTML = '🎙️ Micro: <span class="mono">'+r.state+'</span>';
-      r.onchange = ()=> micState.innerHTML = '🎙️ Micro: <span class="mono">'+r.state+'</span>';
-    } else {
-      micState.innerHTML = '🎙️ Micro: <span class="mono">unknown</span>';
+    function showView(id, btn){
+      $$('.view').forEach(v => v.classList.add('hidden'));
+      $('#view-'+id).classList.remove('hidden');
+      $$('#tabs button').forEach(b => b.classList.remove('active'));
+      btn && btn.classList.add('active');
     }
-  }catch{ micState.innerHTML = '🎙️ Micro: <span class="mono">unknown</span>'; }
-})();
 
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recog = null, recognizing = false;
-function startRec(){
-  if (!SR){ alert("Reconnaissance vocale indisponible (essayez Chrome)"); return; }
-  if (recognizing) return;
-  recog = new SR();
-  recog.lang = (recLangInput.value || 'fr-FR');
-  recog.interimResults = true; recog.continuous = true;
-  $('#speechOut').value = '';
-  recog.onresult = (e)=>{
-    let txt=''; for (let i=0;i<e.results.length;i++){
-      txt += e.results[i][0].transcript + (e.results[i].isFinal?'\n':' ');
+    /* ===========================
+       XP / Progress / Goals
+       =========================== */
+    function getXP(d=todayKey()){ const map=store.get(K.xpByDay,{}); return map[d]||0; }
+    function setXP(val, d=todayKey()){ const map=store.get(K.xpByDay,{}); map[d]=val; store.set(K.xpByDay,map); }
+    function addXP(amount, flag=null){
+      const d = todayKey();
+      const curr = getXP(d) + amount;
+      setXP(curr);
+      if (flag){
+        const flags = store.get(K.flagsByDay,{});
+        flags[d] = flags[d] || {listening:false,speaking:false,reading:false,vocab:false,phrases:false};
+        flags[d][flag] = true; store.set(K.flagsByDay, flags);
+      }
+      refreshProgress();
+      draw14DayChart();
     }
-    $('#speechOut').value = txt.trim();
-    evalSpeaking(); // live update
-  };
-  recog.onerror = (e)=> console.warn('SR error', e);
-  recog.onend = ()=>{ recognizing=false; recState.innerHTML='🗣️ Parole: <span class="mono">inactive</span>'; $('#stopRec').disabled=true; };
-  try{
-    recog.start(); recognizing=true; recState.innerHTML='🗣️ Parole: <span class="mono">listening…</span>'; $('#stopRec').disabled=false;
-  }catch(e){ alert("Impossible de démarrer l'écoute"); }
-}
-function stopRec(){ if(recog){ recog.stop(); } }
-$('#startRec').onclick = startRec; $('#stopRec').onclick = stopRec;
+    function dailyFlags(d=todayKey()){
+      const f = store.get(K.flagsByDay,{})[d] || {listening:false,speaking:false,reading:false,vocab:false,phrases:false};
+      return f;
+    }
+    function refreshProgress(){
+      const goal = store.get(K.goalDailyXP,30);
+      $('#goalVal').textContent = goal + ' xp';
+      $('#goalBadge').textContent = `🎯 Objectif: ${goal} xp/jour`;
 
-/* =========================
-   Daily Phrases
-   ========================= */
-const PHRASE_BANK = [
-  {fr:"Comment ça va ?", en:"How are you?"},
-  {fr:"Je m'appelle Nicklas.", en:"My name is Nicklas."},
-  {fr:"Pouvez-vous répéter, s'il vous plaît ?", en:"Could you repeat, please?"},
-  {fr:"Je suis débutant, parlez lentement.", en:"I'm a beginner, speak slowly."},
-  {fr:"Où sont les toilettes ?", en:"Where is the restroom?"},
-  {fr:"Combien ça coûte ?", en:"How much is it?"},
-  {fr:"Je ne comprends pas.", en:"I don't understand."},
-  {fr:"Quel est le mot pour… ?", en:"What's the word for…?"},
-  {fr:"C'est une bonne idée.", en:"That's a good idea."},
-  {fr:"J'apprends le français.", en:"I'm learning French."},
-  {fr:"Je voudrais un café, s'il vous plaît.", en:"I'd like a coffee, please."},
-  {fr:"À quelle heure ça ouvre ?", en:"What time does it open?"},
-  {fr:"Je cherche la gare.", en:"I'm looking for the train station."},
-  {fr:"C’est près d’ici ?", en:"Is it close to here?"},
-  {fr:"J’ai besoin d’aide.", en:"I need help."},
-  {fr:"Très bien, merci.", en:"Very well, thanks."},
-  {fr:"Bonne journée !", en:"Have a nice day!"},
-  {fr:"Pouvons-nous parler en français ?", en:"Can we speak in French?"},
-  {fr:"Je suis à un niveau A2.", en:"I'm at an A2 level."},
-  {fr:"Quel est le chemin le plus rapide ?", en:"What's the fastest way?"}
-];
-function getPhrasesState(){ return store.get(K.phrases, {mastered:{}, lastSet:[], lastDay:null}); }
-function savePhrasesState(s){ store.set(K.phrases, s); }
+      const xp = getXP();
+      $('#xpVal').textContent = xp;
+      $('#xpBar').style.width = Math.min(100, Math.round((xp/goal)*100)) + '%';
 
-function pickDailyPhrases(){
-  const s = getPhrasesState();
-  const today = todayKey();
-  if (s.lastDay === today && s.lastSet.length){ renderPhrases(s.lastSet); return; }
-  // pick 10: prefer not mastered
-  const notMastered = PHRASE_BANK.filter(p=>!s.mastered[p.fr]);
-  const pool = (notMastered.length>=10 ? notMastered : PHRASE_BANK);
-  const shuffled=[...pool].sort(()=>Math.random()-0.5).slice(0,10);
-  s.lastSet = shuffled; s.lastDay = today; savePhrasesState(s);
-  renderPhrases(shuffled);
-}
-function renderPhrases(list){
-  const tb = $('#phrasesTable tbody'); tb.innerHTML='';
-  list.forEach((p,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${p.fr}</td>
-      <td class="muted">${p.en}</td>
-      <td><button class="btn" data-say="${i}">🔊</button></td>
-      <td><input type="checkbox" data-master="${i}"/></td>
-    `;
-    tb.appendChild(tr);
-  });
-}
-$('#speakAll').onclick = ()=>{
-  const s = getPhrasesState();
-  (s.lastSet||[]).forEach((p,i)=> setTimeout(()=>speak(p.fr), i*1200));
-};
-$('#newPhrases').onclick = pickDailyPhrases;
-$('#phrasesTable').addEventListener('click',(e)=>{
-  const i = e.target.getAttribute('data-say');
-  if(i!=null){ const p = getPhrasesState().lastSet[+i]; speak(p.fr); }
-});
-$('#phrasesTable').addEventListener('change',(e)=>{
-  const i = e.target.getAttribute('data-master');
-  if(i!=null){ const st = getPhrasesState(); const phr = st.lastSet[+i]; st.mastered[phr.fr]=true; savePhrasesState(st); }
-});
-$('#phrasesDone').onclick = ()=> addXP(5);
+      // disable buttons already flagged today
+      const f = dailyFlags();
+      document.querySelectorAll('[data-flag]').forEach(btn=>{
+        const flag = btn.getAttribute('data-flag');
+        btn.disabled = !!f[flag];
+        btn.onclick = ()=>{ addXP(parseInt(btn.dataset.xp,10), flag); };
+      });
 
-/* =========================
-   Listening
-   ========================= */
-const listenItems = [
-  {text:"Le train part à huit heures du matin.", choices:["à huit heures","à neuf heures","à midi"], correct:0},
-  {text:"J’habite près de la gare mais je travaille en ville.", choices:["près de la gare","loin de la gare","dans la gare"], correct:0},
-  {text:"Après le travail, je promène mon chien au parc.", choices:["au parc","au musée","au marché"], correct:0},
-];
-let listenIdx = 0;
-function renderListening(){
-  const item = listenItems[listenIdx % listenItems.length];
-  $('#listenPrompt').textContent = `Phrase ${ (listenIdx%listenItems.length)+1 }`;
-  const mode = $('#listenMode').value;
-  $('#listenMCQ').innerHTML='';
-  $('#listenDict').style.display = 'none';
-  $('#listenFeedback').textContent = '';
-  if (mode==='mcq'){
-    item.choices.forEach((opt, i)=>{
-      const b = document.createElement('button');
-      b.className='btn'; b.textContent = opt;
-      b.onclick = ()=>{
-        const ok = (i===item.correct);
-        $('#listenFeedback').innerHTML = ok ? '✅ Correct' : '❌ Faux';
-        if (ok) addXP(5);
+      // Streak
+      const streak = calcStreak(goal);
+      $('#streakBadge').textContent = `🔥 Streak: ${streak}`;
+      $('#streakDays').textContent = streak;
+
+      // Week XP
+      $('#wkXp').textContent = calcThisWeekXP();
+
+      // Today plan
+      $('#dailyMinutes').value = store.get(K.dailyMinutes,40);
+      $('#weeklyHours').value = store.get(K.weeklyHours,8);
+      $('#todayPlan').textContent = `${store.get(K.dailyMinutes)} min • focus: parler/écouter + vocab (SRS)`;
+    }
+    function calcThisWeekXP(){
+      const map = store.get(K.xpByDay,{});
+      const d = new Date();
+      const wk = weekNumber(d);
+      let sum = 0;
+      Object.entries(map).forEach(([k,v])=>{
+        const dt = new Date(k);
+        if (weekNumber(dt)===wk && dt.getFullYear()===d.getFullYear()) sum+=v||0;
+      });
+      return sum;
+    }
+    function calcStreak(goal){
+      const map = store.get(K.xpByDay,{});
+      let s=0, day=new Date();
+      while(true){
+        const key = day.toISOString().slice(0,10);
+        if ((map[key]||0) >= goal){ s++; day = addDays(day,-1); }
+        else break;
+      }
+      return s;
+    }
+    function draw14DayChart(){
+      const c = $('#chart14'); const g = c.getContext('2d');
+      const map = store.get(K.xpByDay,{});
+      const today = new Date();
+      const days = [];
+      for(let i=13;i>=0;i--){ const d=addDays(today,-i); const k=d.toISOString().slice(0,10); days.push({k, xp: map[k]||0}); }
+      // clear
+      g.clearRect(0,0,c.width,c.height);
+      const W=c.width, H=c.height, pad=20, bw=(W-2*pad)/days.length - 6;
+      const max = Math.max(30, ...days.map(d=>d.xp));
+      let sum=0;
+      days.forEach((d,i)=>{ sum+=d.xp; const x=pad+i*((W-2*pad)/days.length), h=(H-2*pad)*(d.xp/max); g.fillRect(x, H-pad-h, bw, h); });
+      $('#sum14').textContent = sum;
+    }
+
+    // Controls
+    $('#incGoal').onclick = ()=>{ store.set(K.goalDailyXP, store.get(K.goalDailyXP,30)+5); refreshProgress(); };
+    $('#decGoal').onclick = ()=>{ store.set(K.goalDailyXP, Math.max(10, store.get(K.goalDailyXP,30)-5)); refreshProgress(); };
+    $('#resetDay').onclick = ()=>{ setXP(0); const flags=store.get(K.flagsByDay,{}); flags[todayKey()]={listening:false,speaking:false,reading:false,vocab:false,phrases:false}; store.set(K.flagsByDay,flags); refreshProgress(); };
+    $('#saveDailyMinutes').onclick = ()=>{ store.set(K.dailyMinutes, Math.max(10, parseInt($('#dailyMinutes').value||40,10))); refreshProgress(); };
+    $('#saveWeeklyHours').onclick = ()=>{ store.set(K.weeklyHours, Math.max(1, parseInt($('#weeklyHours').value||8,10))); refreshProgress(); };
+
+    // Countdown to Dec 31 (B2 goal)
+    function setB2Countdown(){
+      const now=new Date(); const end=new Date(now.getFullYear(),11,31);
+      const days=Math.max(0, Math.ceil((end - now)/86400000));
+      $('#daysToB2').textContent = days;
+    }
+
+    /* ===========================
+       Data Export / Import
+       =========================== */
+    $('#exportData').onclick = ()=>{
+      const data = {};
+      Object.values(K).forEach(key=> data[key]=store.get(key));
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='french_dev_backup.json'; a.click();
+      URL.revokeObjectURL(url);
+    };
+    $('#importData').onchange = (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const r = new FileReader();
+      r.onload = ()=>{
+        try{ const obj=JSON.parse(r.result);
+          Object.entries(obj).forEach(([k,v])=> localStorage.setItem(k, JSON.stringify(v)));
+          alert('Importation réussie. Rechargement…'); location.reload();
+        }catch{ alert('Fichier invalide'); }
       };
-      $('#listenMCQ').appendChild(b);
-    });
-  } else {
-    $('#listenDict').style.display = 'block';
-  }
-}
-$('#listenMode').onchange = renderListening;
-$('#listenPlay').onclick = ()=>{
-  const item = listenItems[listenIdx % listenItems.length];
-  speak(item.text);
-};
-$('#listenStop').onclick = ()=> speechSynthesis.cancel();
-$('#listeningDone').onclick = ()=> addXP(5);
-$('#listenDict').addEventListener('blur', ()=>{
-  const item = listenItems[listenIdx % listenItems.length];
-  const typed = $('#listenDict').value.trim().toLowerCase();
-  const target = item.text.trim().toLowerCase();
-  const sim = similarity(typed, target);
-  $('#listenFeedback').innerHTML = `Score: ${(sim*100|0)}%`;
-  if (sim>0.85) addXP(5);
-});
-renderListening();
+      r.readAsText(file);
+    };
+    $('#factoryReset').onclick = ()=>{
+      if(!confirm('Tout effacer et repartir de zéro ?')) return;
+      Object.values(K).forEach(k=> localStorage.removeItem(k));
+      location.reload();
+    };
 
-/* =========================
-   Speaking (target prompts + scoring)
-   ========================= */
-const SPEAK_BANK = PHRASE_BANK.map(p=>p.fr).concat([
-  "Je voudrais réserver une table pour deux ce soir.",
-  "Est-ce que vous pouvez me recommander un bon restaurant ?",
-  "Je suis en train d’apprendre le français pour le travail."
-]);
-function randomTarget(){
-  return SPEAK_BANK[Math.floor(Math.random()*SPEAK_BANK.length)];
-}
-function setTarget(){ $('#speakTarget').textContent = randomTarget(); }
-$('#nextPrompt').onclick = setTarget;
-$('#playTarget').onclick = ()=> speak($('#speakTarget').textContent);
-function norm(s){ return s.toLowerCase().replace(/[^\p{L}\p{N}\s']/gu,'').replace(/\s+/g,' ').trim(); }
-
-function levenshtein(a,b){
-  // basic Levenshtein
-  const m = a.length, n = b.length;
-  const dp = Array.from({length:m+1},()=>Array(n+1).fill(0));
-  for(let i=0;i<=m;i++) dp[i][0]=i;
-  for(let j=0;j<=n;j++) dp[0][j]=j;
-  for(let i=1;i<=m;i++){
-    for(let j=1;j<=n;j++){
-      const c = a[i-1]===b[j-1]?0:1;
-      dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+c);
+    /* ===========================
+       Comprehension (Articles)
+       =========================== */
+    const ARTICLES = [
+      {
+        title:'Le vélo en ville',
+        fr:"Aujourd’hui, la mairie a ouvert une nouvelle piste cyclable au centre-ville pour réduire la circulation et la pollution. Les habitants disent que la piste est large et sûre. Les commerçants espèrent voir plus de clients, car il sera plus facile d’accéder aux magasins à vélo.",
+        en:"Today, the city hall opened a new bike lane downtown to reduce traffic and pollution. Residents say the lane is wide and safe. Shop owners hope to see more customers because it will be easier to reach stores by bike.",
+        qs:["Pourquoi la mairie a-t-elle ouvert une nouvelle piste cyclable ?","Que pensent les habitants de la piste ?","Qu’espèrent les commerçants ?"],
+        ans:["Pour réduire la circulation et la pollution.","Elle est large et sûre.","Avoir plus de clients grâce à l’accès plus facile aux magasins."]
+      },
+      {
+        title:"La météo et l’agriculture",
+        fr:"Après plusieurs semaines de pluie, les agriculteurs profitent enfin du soleil pour récolter. Les experts disent que la qualité sera correcte, mais certains fruits sont plus petits que d’habitude. Les marchés locaux restent bien approvisionnés.",
+        en:"After several weeks of rain, farmers are finally enjoying the sun to harvest. Experts say quality will be fine, but some fruits are smaller than usual. Local markets remain well supplied.",
+        qs:["Quel temps faisait-il ces dernières semaines ?","Quel est l’impact sur les fruits ?","Comment vont les marchés locaux ?"],
+        ans:["Il a plu pendant plusieurs semaines.","Certains fruits sont plus petits que d’habitude.","Ils restent bien approvisionnés."]
+      },
+      {
+        title:"Le train du matin",
+        fr:"La compagnie ferroviaire a ajouté deux trains le matin pour éviter la foule aux heures de pointe. Les voyageurs remarquent des trajets plus calmes et plus rapides. L’entreprise surveille la fréquentation avant de décider de nouvelles lignes.",
+        en:"The railway company added two morning trains to avoid crowds at rush hour. Travelers are noticing calmer, faster rides. The company is monitoring ridership before deciding on new routes.",
+        qs:["Combien de trains ont été ajoutés le matin ?","Qu’est-ce que les voyageurs remarquent ?","Que fera l’entreprise ensuite ?"],
+        ans:["Deux trains.","Des trajets plus calmes et plus rapides.","Elle surveillera la fréquentation avant de décider de nouvelles lignes."]
+      }
+    ];
+    let showEN=false, artIdx=0, ttsUtter=null;
+    function renderArticle(){
+      const a=ARTICLES[artIdx%ARTICLES.length];
+      $('#articleBox').value = showEN? a.en : a.fr;
+      $('#articleQA').innerHTML = `
+        <div class="row small"><span class="pill">Texte: ${a.title}</span></div>
+        <ol class="small">${a.qs.map((q,i)=>`<li>${q} <details class="muted"><summary>Réponse suggérée</summary>${a.ans[i]}</details></li>`).join('')}</ol>
+      `;
     }
-  }
-  return dp[m][n];
-}
-function similarity(a,b){
-  a=norm(a); b=norm(b);
-  if(!a && !b) return 1;
-  if(!a || !b) return 0;
-  const dist = levenshtein(a,b);
-  return 1 - dist / Math.max(a.length,b.length);
-}
-function evalSpeaking(){
-  const ref = $('#speakTarget').textContent;
-  const said = $('#speechOut').value || '';
-  const s = similarity(said, ref);
-  $('#speakScore').innerHTML = `Similarité ~ ${(s*100|0)}%`;
-  if (s>0.9) { $('#speakScore').innerHTML += ' ✅'; }
-}
-$('#speakingDone').onclick = ()=> addXP(5);
-setTarget();
+    $('#nextArticle').onclick = ()=>{ artIdx++; renderArticle(); };
+    $('#toggleArticleLang').onclick = ()=>{ showEN=!showEN; $('#toggleArticleLang').textContent = showEN?'Afficher le texte (FR)':'Afficher traduction (EN)'; renderArticle(); };
+    $('#speakArticle').onclick = ()=>{
+      if(!('speechSynthesis' in window)){ alert("Synthèse vocale non disponible."); return; }
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance($('#articleBox').value);
+      u.lang='fr-FR'; u.rate=0.95; u.pitch=1;
+      ttsUtter=u; speechSynthesis.speak(u);
+    };
+    $('#stopSpeakArticle').onclick = ()=> speechSynthesis.cancel();
+    $('#markCompXP').onclick = ()=> addXP(5,'reading');
 
-/* =========================
-   Comprehension (texts, Qs, cloze)
-   ========================= */
-const samples = [
-  {
-    title: "Le vélo en ville",
-    fr: "Aujourd’hui, la mairie a ouvert une nouvelle piste cyclable au centre-ville pour réduire la circulation et la pollution. Les habitants disent que la piste est large et sûre. Les commerçants espèrent voir plus de clients, car il sera plus facile d’accéder aux magasins à vélo.",
-    en: "Today, the city hall opened a new bike lane downtown to reduce traffic and pollution. Residents say the lane is wide and safe. Shop owners hope to see more customers because it will be easier to reach stores by bike.",
-    qs: [
-      "Pourquoi la mairie a-t-elle ouvert une nouvelle piste cyclable ?",
-      "Que pensent les habitants de la piste ?",
-      "Qu’espèrent les commerçants ?"
-    ],
-    ans: [
-      "Pour réduire la circulation et la pollution.",
-      "Elle est large et sûre.",
-      "Avoir plus de clients grâce à l’accès plus facile aux magasins."
-    ]
-  },
-  {
-    title: "La météo et l’agriculture",
-    fr: "Après plusieurs semaines de pluie, les agriculteurs profitent enfin du soleil pour récolter. Les experts disent que la qualité sera correcte, mais certains fruits sont plus petits que d’habitude. Les marchés locaux restent bien approvisionnés.",
-    en: "After several weeks of rain, farmers are finally enjoying the sun to harvest. Experts say quality will be fine, but some fruits are smaller than usual. Local markets remain well supplied.",
-    qs: [
-      "Quel temps faisait-il ces dernières semaines ?",
-      "Quel est l’impact sur les fruits ?",
-      "Comment vont les marchés locaux ?"
-    ],
-    ans: [
-      "Il a plu pendant plusieurs semaines.",
-      "Certains fruits sont plus petits que d’habitude.",
-      "Ils restent bien approvisionnés."
-    ]
-  },
-  {
-    title: "Le train du matin",
-    fr: "La compagnie ferroviaire a ajouté deux trains le matin pour éviter la foule aux heures de pointe. Les voyageurs remarquent des trajets plus calmes et plus rapides. L’entreprise surveille la fréquentation avant de décider de nouvelles lignes.",
-    en: "The railway company added two morning trains to avoid crowds at rush hour. Travelers are noticing calmer, faster rides. The company is monitoring ridership before deciding on new routes.",
-    qs: [
-      "Combien de trains ont été ajoutés le matin ?",
-      "Qu’est-ce que les voyageurs remarquent ?",
-      "Que fera l’entreprise ensuite ?"
-    ],
-    ans: [
-      "Deux trains.",
-      "Des trajets plus calmes et plus rapides.",
-      "Elle surveillera la fréquentation avant de décider de nouvelles lignes."
-    ]
-  }
-];
-let showEN = false, sampleIndex = 0;
-function renderComprehension(){
-  const s = samples[sampleIndex % samples.length];
-  $('#newsText').value = showEN ? s.en : s.fr;
-  $('#questions').innerHTML = `
-    <div><span class="pill">Texte: ${s.title}</span></div>
-    <ol class="small">
-      ${s.qs.map((q,i)=>`<li>${q} <details class="muted"><summary>Réponse suggérée</summary>${s.ans[i]}</details></li>`).join('')}
-    </ol>
-  `;
-}
-$('#loadSample').onclick = ()=>{ sampleIndex++; renderComprehension(); };
-$('#toggleLang').onclick = ()=>{ showEN = !showEN; $('#toggleLang').textContent = showEN?'Afficher le texte (FR)':'Afficher la traduction (EN)'; renderComprehension(); };
-$('#speakText').onclick = ()=> speak( $('#newsText').value.trim() || "Bonjour ! Commençons la pratique de français." );
-$('#stopSpeak').onclick = ()=> speechSynthesis.cancel();
-$('#compDone').onclick = ()=> addXP(5);
+    /* ===========================
+       Speaking (Prompts + SR)
+       =========================== */
+    const PROMPTS = {
+      daily:[
+        "Décris ta routine du matin en cinq étapes.",
+        "Quelles habitudes saines veux-tu mettre en place ce mois-ci ?",
+        "Qu’as-tu fait hier soir après le travail ?"
+      ],
+      opinion:[
+        "Es-tu d’accord avec l’idée de travailler à distance ? Pourquoi/pourquoi pas ?",
+        "Les réseaux sociaux sont-ils utiles ou dangereux ? Donne deux raisons.",
+        "Faut-il limiter les voitures en centre-ville ?"
+      ],
+      past:[
+        "Raconte un souvenir d’enfance marquant.",
+        "Parle d’un voyage récent: où, avec qui, et pourquoi c’était bien.",
+        "Décris une difficulté que tu as surmontée."
+      ],
+      future:[
+        "Quels sont tes objectifs d’ici six mois ? Comment vas-tu t’y prendre ?",
+        "Où te vois-tu dans trois ans, professionnellement ?",
+        "Explique un projet que tu voudrais réaliser le week-end prochain."
+      ],
+      work:[
+        "Explique ton rôle actuel et un projet sur lequel tu travailles.",
+        "Décris un problème au travail et ta solution.",
+        "Comment organises-tu tes priorités dans la semaine ?"
+      ]
+    };
+    function randomPrompt(cat){ const arr=PROMPTS[cat]||PROMPTS.daily; return arr[Math.floor(Math.random()*arr.length)]; }
+    function setPrompt(cat){ $('#promptBox').value = randomPrompt(cat); }
+    $('#newPrompt').onclick = ()=> setPrompt($('#promptSelect').value);
+    $('#promptSelect').onchange = ()=> setPrompt($('#promptSelect').value);
+    $('#speakPrompt').onclick = ()=>{
+      if(!('speechSynthesis' in window)){ alert("Synthèse vocale non disponible."); return; }
+      const u = new SpeechSynthesisUtterance($('#promptBox').value || randomPrompt('daily'));
+      u.lang='fr-FR'; u.rate=1; speechSynthesis.speak(u);
+    };
 
-// Cloze generator (hide ~8 keywords)
-function makeClozeFromText(txt){
-  const words = txt.split(/\s+/);
-  const idxs = new Set();
-  const targetCount = Math.min(8, Math.max(3, Math.floor(words.length/12)));
-  while (idxs.size < targetCount){
-    const i = Math.floor(Math.random()*words.length);
-    const w = words[i].replace(/[.,;:!?()]/g,'');
-    if (w.length>3) idxs.add(i);
-  }
-  const answers = [];
-  const masked = words.map((w,i)=>{
-    const clean = w.replace(/([.,;:!?()])/g,'');
-    if (idxs.has(i)) { answers.push(clean); return w.replace(clean, '____'); }
-    return w;
-  }).join(' ');
-  return {masked, answers};
-}
-$('#makeCloze').onclick = ()=>{
-  const txt = $('#newsText').value.trim();
-  if(!txt){ alert('Ajoutez un texte'); return; }
-  const {masked, answers} = makeClozeFromText(txt);
-  $('#clozeBox').innerHTML = `<p>${masked}</p><p class="muted small">Réponses cachées.</p>`;
-  $('#showAnswers').onclick = ()=> $('#clozeBox').innerHTML = `<p>${masked}</p><p class="small">Réponses: ${answers.join(', ')}</p>`;
-};
+    const micState = $('#micState'), recState = $('#recState'), out = $('#speechOut');
+    $('#askMic').onclick = async ()=>{
+      try{ const s=await navigator.mediaDevices.getUserMedia({audio:true}); s.getTracks().forEach(t=>t.stop()); micState.innerHTML='🎙️ Micro: <span class="mono">granted</span>'; }
+      catch{ micState.innerHTML='🎙️ Micro: <span class="mono">blocked</span>'; alert("Autorisez le micro pour github.io"); }
+    };
+    (async function initMicStatus(){
+      if(!navigator.mediaDevices?.getUserMedia){ micState.innerHTML='🎙️ Micro: <span class="mono">unsupported</span>'; return; }
+      try{
+        const r = await navigator.permissions?.query({name:'microphone'});
+        if(r){ micState.innerHTML = '🎙️ Micro: <span class="mono">'+r.state+'</span>'; r.onchange=()=> micState.innerHTML='🎙️ Micro: <span class="mono">'+r.state+'</span>'; }
+        else micState.innerHTML='🎙️ Micro: <span class="mono">unknown</span>';
+      }catch{ micState.innerHTML='🎙️ Micro: <span class="mono">unknown</span>'; }
+    })();
 
-/* =========================
-   Vocabulary — Leitner SRS
-   ========================= */
-function getVocab(){ return store.get(K.vocab, []); }
-function setVocab(v){ store.set(K.vocab, v); }
-function renderVocabTable(){
-  const list = getVocab();
-  const tb = $('#vTable tbody'); tb.innerHTML='';
-  list.forEach((w,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${w.fr}</td><td class="muted">${w.en}</td><td>${w.box||1}</td><td>${w.nextDue||todayKey()}</td>
-    <td><button class="btn bad small" data-del="${i}">Supprimer</button></td>`;
-    tb.appendChild(tr);
-  });
-  $('#vCount').textContent = list.length;
-  $('#vDue').textContent = dueCards().length;
-}
-$('#vTable').addEventListener('click', (e)=>{
-  const i = e.target.getAttribute('data-del');
-  if(i!=null){ const list=getVocab(); list.splice(+i,1); setVocab(list); renderVocabTable(); }
-});
-$('#addWord').onclick = ()=>{
-  const fr = $('#vFr').value.trim(), en = $('#vEn').value.trim();
-  if(!fr || !en) return;
-  const list = getVocab();
-  list.push({fr,en,box:1,nextDue:todayKey(),last:null});
-  setVocab(list); $('#vFr').value=''; $('#vEn').value=''; renderVocabTable();
-};
-$('#exportVocab').onclick = ()=>{
-  const blob = new Blob([JSON.stringify(getVocab(),null,2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='vocab.json'; a.click(); URL.revokeObjectURL(url);
-};
-$('#importVocab').onclick = ()=>{
-  const inp = document.createElement('input'); inp.type='file'; inp.accept='.json';
-  inp.onchange = () => {
-    const f = inp.files[0]; const reader = new FileReader();
-    reader.onload = e => { try{ const arr = JSON.parse(e.target.result); if(Array.isArray(arr)){ setVocab(arr); renderVocabTable(); } }catch{} };
-    reader.readAsText(f);
-  };
-  inp.click();
-};
-$('#clearVocab').onclick = ()=>{ if(confirm('Effacer tout le vocabulaire?')){ setVocab([]); renderVocabTable(); } };
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recog=null;
+    function startRec(){
+      if(!SR){ alert("La reconnaissance vocale n'est pas disponible ici. Essayez Chrome."); return; }
+      if(recog) return;
+      recog=new SR(); recog.lang='fr-FR'; recog.interimResults=true; recog.continuous=true; out.value='';
+      recog.onresult=(e)=>{ let txt=''; for(let i=0;i<e.results.length;i++){ txt += e.results[i][0].transcript + (e.results[i].isFinal?'\n':' '); } out.value=txt.trim(); };
+      recog.onerror=(e)=> console.warn(e);
+      recog.onend=()=>{ recState.innerHTML='🗣️ État: <span class="mono">inactif</span>'; $('#stopRec').disabled=true; recog=null; };
+      try{ recog.start(); recState.innerHTML='🗣️ État: <span class="mono">écoute…</span>'; $('#stopRec').disabled=false; }
+      catch{ alert("Impossible de démarrer. Autorisez le micro, puis réessayez."); }
+    }
+    function stopRec(){ if(recog) recog.stop(); }
+    $('#startRec').onclick = startRec;
+    $('#stopRec').onclick = stopRec;
+    $('#markSpeakXP').onclick = ()=> addXP(5,'speaking');
 
-function boxIntervalDays(box){
-  // Leitner-ish spacing
-  return [0,1,2,4,7,14,30][box] || 30;
-}
-function scheduleNext(card, ease){
-  // ease: 'again' | 'hard' | 'good' | 'easy'
-  let box = card.box||1;
-  if(ease==='again') box = 1;
-  else if(ease==='hard') box = Math.max(1, box);
-  else if(ease==='good') box = Math.min(5, box+1);
-  else if(ease==='easy') box = Math.min(6, box+2);
-  card.box = box;
-  const days = boxIntervalDays(box);
-  card.nextDue = dateAdd(todayKey(), days);
-  card.last = todayKey();
-  return card;
-}
-function dueCards(){
-  const today = todayKey();
-  return getVocab().filter(c => !c.nextDue || c.nextDue <= today);
-}
+    /* ===========================
+       Listening (Dictation)
+       =========================== */
+    const DICT = [
+      {text:"Je prendrai le train de sept heures demain matin.", hint:"Transport / futur proche"},
+      {text:"Pouvez-vous répéter plus lentement, s'il vous plaît ?", hint:"Demander poliment"},
+      {text:"Nous avons décidé d’envisager une autre solution.", hint:"Décision / alternatives"},
+      {text:"Il a oublié de mettre en place la réunion.", hint:"Organisation au travail"}
+    ];
+    let dIdx=0, lastUtter=null;
+    function playCurrentDictation(){
+      const d=DICT[dIdx%DICT.length];
+      $('#dictationHint').textContent = "Indice : " + d.hint;
+      $('#dictationTarget').textContent = d.text;
+      if(!('speechSynthesis' in window)){ alert("Synthèse vocale non disponible."); return; }
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(d.text); u.lang='fr-FR'; u.rate=0.95; lastUtter=u; speechSynthesis.speak(u);
+    }
+    $('#playDictation').onclick = ()=>{ playCurrentDictation(); };
+    $('#replayDictation').onclick = ()=>{ if(lastUtter) speechSynthesis.speak(lastUtter); else playCurrentDictation(); };
+    $('#checkDictation').onclick = ()=>{
+      const target = $('#dictationTarget').textContent.trim().toLowerCase();
+      const guess = $('#dictationInput').value.trim().toLowerCase();
+      const score = similarityWords(target, guess);
+      $('#dictationScore').textContent = `Score: ${Math.round(score*100)}%`;
+    };
+    $('#markListenXP').onclick = ()=> addXP(5,'listening');
+    function similarityWords(a,b){
+      const wa=a.replace(/[^\p{L}\p{N}\s']/gu,'').split(/\s+/);
+      const wb=b.replace(/[^\p{L}\p{N}\s']/gu,'').split(/\s+/);
+      const set=new Set(wa); let match=0; wb.forEach(w=>{ if(set.has(w)) match++; });
+      return wa.length? match/wa.length : 0;
+    }
 
-const reviewUI = {
-  noDue: $('#noDue'), dueCard: $('#dueCard'), front: $('#cardFront'),
-  back: $('#cardBack'), backTxt: $('#cardBackTxt')
-};
-let currentCardIndex = null, currentPool = [];
-function startReview(){
-  currentPool = dueCards();
-  if(!currentPool.length){
-    reviewUI.noDue.style.display='block'; reviewUI.dueCard.style.display='none'; return;
-  }
-  reviewUI.noDue.style.display='none'; reviewUI.dueCard.style.display='block'; reviewUI.back.style.display='none';
-  currentCardIndex = 0;
-  showCard();
-}
-function showCard(){
-  const card = currentPool[currentCardIndex];
-  reviewUI.front.textContent = card.fr; reviewUI.backTxt.textContent = card.en;
-}
-$('#flipCard').onclick = ()=> reviewUI.back.style.display='block';
-function grade(ease){
-  const card = currentPool[currentCardIndex];
-  scheduleNext(card, ease);
-  const all = getVocab();
-  const idx = all.findIndex(c => c.fr===card.fr && c.en===card.en);
-  if(idx>=0){ all[idx]=card; setVocab(all); }
-  currentCardIndex++;
-  addXP(ease==='again'?0: (ease==='hard'?2: (ease==='good'?4:5)));
-  if(currentCardIndex>=currentPool.length){ startReview(); } else { reviewUI.back.style.display='none'; showCard(); }
-}
-$('#gradeAgain').onclick = ()=> grade('again');
-$('#gradeHard').onclick  = ()=> grade('hard');
-$('#gradeGood').onclick  = ()=> grade('good');
-$('#gradeEasy').onclick  = ()=> grade('easy');
-$('#speakCard').onclick  = ()=> speak(reviewUI.front.textContent);
+    /* ===========================
+       Vocabulary (SRS)
+       =========================== */
+    let vocab = store.get(K.vocabList,[]);
+    let quizQueue = [];
+    function refreshVocabTable(){
+      const tb = $('#vTable tbody'); tb.innerHTML='';
+      vocab.forEach((w,i)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHTML(w.fr)}</td><td>${escapeHTML(w.en)}</td><td class="small">${w.due}</td><td><button class="btn bad small" data-del="${w.id}">Sup.</button></td>`;
+        tb.appendChild(tr);
+      });
+      tb.onclick = (e)=>{ const id=e.target.getAttribute('data-del'); if(id){ vocab=vocab.filter(x=>x.id!=id); store.set(K.vocabList,vocab); refreshVocabTable(); updateDueCount(); } };
+    }
+    function updateDueCount(){
+      const today=fmt(todayKey());
+      const due=vocab.filter(v=> v.due<=today).length;
+      $('#dueCount').textContent = due;
+      $('#dueNow').textContent = due;
+    }
+    function addVocab(fr,en){
+      const id = Date.now();
+      vocab.push({id, fr, en, ease:2.5, interval:0, reps:0, due:fmt(todayKey())});
+      store.set(K.vocabList,vocab);
+      refreshVocabTable(); updateDueCount();
+    }
+    $('#addWord').onclick = ()=>{
+      const fr=$('#vFr').value.trim(); const en=$('#vEn').value.trim();
+      if(!fr||!en) return;
+      addVocab(fr,en); $('#vFr').value=''; $('#vEn').value='';
+    };
+    $('#exportVocab').onclick = ()=>{
+      const blob = new Blob([JSON.stringify(vocab,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='vocab.json'; a.click();
+      URL.revokeObjectURL(url);
+    };
+    $('#importVocab').onchange = (e)=>{
+      const f=e.target.files[0]; if(!f) return;
+      const r=new FileReader(); r.onload=()=>{ try{ const arr=JSON.parse(r.result); if(Array.isArray(arr)){ vocab=arr; store.set(K.vocabList,vocab); refreshVocabTable(); updateDueCount(); } }catch{} }; r.readAsText(f);
+    };
+    $('#clearVocab').onclick = ()=>{ if(confirm('Effacer tout le vocabulaire ?')){ vocab=[]; store.set(K.vocabList,vocab); refreshVocabTable(); updateDueCount(); } };
 
-/* =========================
-   Settings & Data
-   ========================= */
-function loadSettings(){
-  const s = store.get(K.settings);
-  $('#recLang').value = s.recLang||'fr-FR';
-  $('#ttsRate').value = s.rate||0.95;
-  $('#targetLevel').value = s.targetLevel||'A2';
-  $('#dailyGoalInput').value = getGoals().daily;
-  $('#weeklyGoalInput').value = getGoals().weekly;
-}
-$('#saveGoals').onclick = ()=>{
-  const g = getGoals();
-  g.daily = Math.max(10, Number($('#dailyGoalInput').value)||g.daily);
-  g.weekly = Math.max(50, Number($('#weeklyGoalInput').value)||g.weekly);
-  setGoals(g); renderDashboard();
-  alert('Objectifs mis à jour');
-};
-$('#recLang').addEventListener('change',(e)=>{ const s=store.get(K.settings); s.recLang=e.target.value; store.set(K.settings,s); });
-$('#targetLevel').addEventListener('change',(e)=>{ const s=store.get(K.settings); s.targetLevel=e.target.value; store.set(K.settings,s); levelState.innerHTML = `🎯 Niveau: <span class="mono">${s.targetLevel}</span>`; });
+    // Quiz
+    let currentCard=null;
+    $('#startQuiz').onclick = ()=>{
+      const today=fmt(todayKey());
+      quizQueue = vocab.filter(v=> v.due<=today);
+      if(!quizQueue.length){ alert("Aucune carte due. Ajoutez des mots ou attendez le prochain rappel."); return; }
+      serveNextCard();
+    };
+    $('#skipCard').onclick = ()=> serveNextCard();
+    function serveNextCard(){
+      currentCard = quizQueue.shift();
+      if(!currentCard){ $('#quizFront h2').textContent='Terminé 👏'; disableRate(true); $('#markVocabXP').disabled=false; return; }
+      $('#quizFront h2').textContent=currentCard.fr;
+      $('#quizAnswer').value = ''; $('#quizBack').textContent = '';
+      disableRate(true); $('#revealA').disabled=false; $('#skipCard').disabled=false;
+    }
+    function disableRate(dis){
+      ['rateAgain','rateHard','rateGood','rateEasy'].forEach(id=> $('#'+id).disabled = dis);
+    }
+    $('#revealA').onclick = ()=>{
+      if(!currentCard) return;
+      $('#quizBack').textContent = currentCard.en;
+      disableRate(false); $('#revealA').disabled=true;
+    };
+    $('#rateAgain').onclick = ()=> rateCard(0);
+    $('#rateHard').onclick = ()=> rateCard(2);
+    $('#rateGood').onclick = ()=> rateCard(3);
+    $('#rateEasy').onclick = ()=> rateCard(4);
+    $('#markVocabXP').onclick = ()=>{ addXP(5,'vocab'); $('#markVocabXP').disabled=true; };
 
-$('#exportAll').onclick = ()=>{
-  const data = {};
-  store.keys().forEach(k=> data[k]=store.get(k));
-  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url
+    function rateCard(grade){
+      // Minimal SM-2 style
+      const c=currentCard;
+      if(grade<3){
+        c.reps=0; c.interval=1; c.ease=Math.max(1.3, c.ease-0.2);
+      } else {
+        c.reps+=1;
+        if(c.reps===1) c.interval=1;
+        else if(c.reps===2) c.interval=3;
+        else c.interval = Math.round(c.interval * c.ease);
+        c.ease = Math.min(3.0, c.ease + (grade===4?0.15:0.0));
+      }
+      const next = addDays(new Date(), c.interval);
+      c.due = fmt(next);
+      // save
+      const idx = vocab.findIndex(v=>v.id===c.id);
+      if(idx>-1) vocab[idx]=c; store.set(K.vocabList,vocab);
+      refreshVocabTable(); updateDueCount();
+      serveNextCard();
+    }
+
+    /* ===========================
+       Daily Phrases
+       =========================== */
+    const PHRASES = [
+      "Bonjour, comment ça va ?",
+      "Je m’appelle Nicklas. Enchanté(e).",
+      "Pouvez-vous répéter, s’il vous plaît ?",
+      "Je suis à un niveau A2, je voudrais atteindre B2.",
+      "Où se trouve la gare, s’il vous plaît ?",
+      "Combien ça coûte ?",
+      "Je cherche un bon restaurant dans le quartier.",
+      "J’ai besoin d’aide avec mon français.",
+      "Je préfère parler plus lentement.",
+      "Merci beaucoup ! / De rien.",
+      "Je voudrais réserver une table pour deux.",
+      "Est-ce que je peux promener mon chien ici ?",
+      "C’est possible d’essayer ?",
+      "Je comprends / Je ne comprends pas.",
+      "Je vais vérifier et je reviens."
+    ];
+    function todaysPhraseIndexes(){
+      // deterministic 10 phrases/day based on date
+      const seed = parseInt((store.get(K.dueSeed) ?? Date.now()).toString().slice(-6),10);
+      const day = parseInt(todayKey().replace(/-/g,''),10);
+      const rand = (n)=> (Math.abs(Math.sin(seed+day+n))*10000)%PHRASES.length|0;
+      const set=new Set();
+      while(set.size<10 && set.size<PHRASES.length) set.add(rand(set.size));
+      return [...set];
+    }
+    function renderPhrases(){
+      const list = todaysPhraseIndexes().map(i=>PHRASES[i]);
+      const c = $('#phraseList'); c.innerHTML='';
+      list.forEach((p,i)=>{
+        const row=document.createElement('div');
+        row.className='row'; row.style.marginBottom='6px';
+        const btn=document.createElement('button'); btn.className='btn'; btn.textContent='🔊';
+        btn.onclick=()=> speak(p);
+        const span=document.createElement('span'); span.textContent = (i+1)+'. '+p;
+        row.appendChild(btn); row.appendChild(span); c.appendChild(row);
+      });
+    }
+    function speak(text){
+      if(!('speechSynthesis' in window)){ alert("Synthèse vocale non disponible."); return; }
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text); u.lang='fr-FR'; u.rate=1; speechSynthesis.speak(u);
+    }
+    $('#speakAllPhrases').onclick = ()=>{
+      PHRASES.forEach((p,i)=> setTimeout(()=>speak(p), i*1500));
+    };
+    $('#newPhrases').onclick = ()=>{ store.set(K.dueSeed, Date.now()); renderPhrases(); };
+    $('#markPhrasesXP').onclick = ()=> addXP(5,'phrases');
+
+    /* ===========================
+       Helpers
+       =========================== */
+    function escapeHTML(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+    /* ===========================
+       INIT
+       =========================== */
+    function init(){
+      initTabs();
+      refreshVocabTable(); updateDueCount();
+      renderArticle(); setPrompt('daily'); renderPhrases();
+      refreshProgress(); draw14DayChart(); setB2Countdown();
+
+      // Wire dashboard +xp buttons
+      document.querySelectorAll('#view-dashboard [data-flag]').forEach(btn=>{
+        btn.onclick = ()=> addXP(parseInt(btn.dataset.xp,10), btn.dataset.flag);
+      });
+
+      // Resize canvas correctly after first paint
+      const c=$('#chart14'); const rect=c.getBoundingClientRect();
+      c.width = Math.floor(rect.width * (window.devicePixelRatio||1));
+      c.height = Math.floor(150 * (window.devicePixelRatio||1));
+      draw14DayChart();
+      window.addEventListener('resize', ()=>{
+        const r=c.getBoundingClientRect();
+        c.width=Math.floor(r.width*(window.devicePixelRatio||1));
+        c.height=Math.floor(150*(window.devicePixelRatio||1));
+        draw14DayChart();
+      });
+    }
+    init();
+  </script>
+</body>
+</html>
